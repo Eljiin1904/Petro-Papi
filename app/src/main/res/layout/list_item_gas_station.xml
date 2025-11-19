@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="4dp"
+    app:strokeColor="@android:color/black"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <!-- Station Image -->
+        <ImageView
+            android:id="@+id/ivStationImage"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/petropapi"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- Station Name -->
+        <TextView
+            android:id="@+id/stationName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Station Name"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@id/ivStationImage"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Station Address -->
+        <TextView
+            android:id="@+id/stationAddress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Station Address"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@id/stationName"
+            app:layout_constraintTop_toBottomOf="@id/stationName"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Station Prices -->
+        <TextView
+            android:id="@+id/stationPrices"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Prices"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@id/stationName"
+            app:layout_constraintTop_toBottomOf="@id/stationAddress"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Station Hours -->
+        <TextView
+            android:id="@+id/stationHours"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Hours"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@id/stationName"
+            app:layout_constraintTop_toBottomOf="@id/stationPrices"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

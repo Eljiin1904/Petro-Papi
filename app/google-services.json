@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "646029309925",
+    "project_id": "petro-papi",
+    "storage_bucket": "petro-papi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:646029309925:android:047e50b8041c003007e10c",
+        "android_client_info": {
+          "package_name": "com.example.petropapi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8P3rExpcTas5e50WjfvyfIj6op0Ksmyk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

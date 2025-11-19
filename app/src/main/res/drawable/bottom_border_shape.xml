@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- The fill color for the container -->
+    <solid android:color="@android:color/white" />
+
+    <!-- The black stroke (border) -->
+    <stroke
+        android:width="2dp"
+        android:color="@android:color/black" />
+
+    <!-- Rounded corners (optional) -->
+    <corners android:radius="4dp" />
+
+    <!-- Optional padding inside the container -->
+    <padding
+        android:left="4dp"
+        android:top="4dp"
+        android:right="4dp"
+        android:bottom="4dp" />
+</shape>

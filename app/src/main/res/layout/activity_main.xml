@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/activity_main.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- Top half: Map with overlay button -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/map"
+            class="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- "Search this area" button -->
+        <Button
+            android:id="@+id/btnSearchThisArea"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search this area"
+            android:alpha="0.7"
+            android:visibility="gone"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"/>
+    </FrameLayout>
+
+    <!-- Bottom half: RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewStations"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- Top App Bar (placed at the bottom in this layout; you may choose to reposition it) -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:backgroundTint="@color/purple_700"
+        android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar"
+        app:title="Petro Papi"
+        app:titleCentered="true"
+        app:titleTextColor="@android:color/white" />
+</LinearLayout>

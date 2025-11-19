@@ -1,0 +1,18 @@
+// settings.gradle (project root)
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    // Use PREFER_SETTINGS so that if a module adds its own repositories, they are allowed.
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "PetroPapi"
+include ':app'
