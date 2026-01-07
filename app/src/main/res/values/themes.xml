@@ -22,5 +22,9 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowBackground">@drawable/splash_background</item>
         <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowSplashScreenBackground">@color/white</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo_vector</item>
+        <item name="android:windowSplashScreenAnimationDuration">1200</item>
+        <item name="android:postSplashScreenTheme">@style/Theme.PetroPapi.NoActionBar</item>
     </style>
 </resources>
