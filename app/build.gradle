@@ -13,11 +13,27 @@ android {
     namespace "com.example.petropapi"
 
     defaultConfig {
+        def localProperties = new Properties()
+        def localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.withInputStream { stream ->
+                localProperties.load(stream)
+            }
+        }
+        def mapsApiKey = localProperties.getProperty("MAPS_API_KEY")
+        if (!mapsApiKey) {
+            mapsApiKey = project.findProperty("MAPS_API_KEY") ?: System.getenv("MAPS_API_KEY")
+        }
+        if (!mapsApiKey) {
+            mapsApiKey = "MISSING_MAPS_API_KEY"
+        }
+
         applicationId "com.example.petropapi"
         minSdkVersion 21
         targetSdkVersion 33
         versionCode 1
         versionName "1.0"
+        manifestPlaceholders = [MAPS_API_KEY: mapsApiKey]
 
         // Use the AndroidX test runner instead of the old android.support runner
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
