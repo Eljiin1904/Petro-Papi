@@ -18,6 +18,8 @@ import com.example.petropapi.data.StationRepository;
 import com.example.petropapi.data.StationRepositoryCallback;
 import com.example.petropapi.data.StationRepositoryFactory;
 import com.example.petropapi.data.model.StationSummary;
+import com.example.petropapi.models.gasbuddy.Station;
+import com.example.petropapi.data.StationRepository;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -106,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         stationRepository = StationRepositoryFactory.createDefaultRepository();
+        stationRepository = new StationRepository(this);
     }
 
     @Override
@@ -192,6 +195,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     StationSummary firstStation = stationList.get(0);
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                             new LatLng(firstStation.getLatitude(), firstStation.getLongitude()), 12f));
+        stationRepository.fetchNearbyStations(lat, lng, new StationRepository.StationCallback() {
+            @Override
+            public void onSuccess(List<Station> stationList, boolean fromCache) {
+                updateStationsOnMap(stationList);
+                if (fromCache) {
+                    Toast.makeText(MainActivity.this, "Showing cached gas station data", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -199,8 +208,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onError(Throwable error) {
                 Log.e(TAG, "Station API Error: " + error.getMessage());
                 Toast.makeText(MainActivity.this, "Failed to fetch station data", Toast.LENGTH_LONG).show();
+            public void onError(String message) {
+                Log.e(TAG, "Station repository error: " + message);
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void updateStationsOnMap(List<Station> stationList) {
+        if (stationList == null || stationList.isEmpty()) {
+            Toast.makeText(MainActivity.this, "No gas stations found", Toast.LENGTH_LONG).show();
+            return;
+        }
+        gasStationAdapter.updateData(stationList);
+
+        if (googleMap != null) {
+            googleMap.clear();
+            for (Station station : stationList) {
+                LatLng latLng = new LatLng(station.getLatitude(), station.getLongitude());
+                googleMap.addMarker(new MarkerOptions().position(latLng).title(station.getName()));
+            }
+            Station firstStation = stationList.get(0);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(firstStation.getLatitude(), firstStation.getLongitude()), 12f));
+        }
     }
 
     @Override

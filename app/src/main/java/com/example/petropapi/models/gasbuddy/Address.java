@@ -8,6 +8,13 @@ public class Address {
     private String postalCode;
     private String region;
 
+    public Address() {
+    }
+
+    public Address(String line1) {
+        this.line1 = line1;
+    }
+
     // Getters
     public String getCountry() {
         return country;
