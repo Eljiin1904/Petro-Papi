@@ -20,6 +20,17 @@ public class Station {
     // UPDATED: Prices is now a list of PriceReport objects
     private List<PriceReport> prices;
 
+    public Station() {
+    }
+
+    public Station(String id, String name, double latitude, double longitude, Address address) {
+        this.id = id;
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.address = address;
+    }
+
     // Getters
     public Address getAddress() {
         return address;
