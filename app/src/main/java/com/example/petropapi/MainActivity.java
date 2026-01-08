@@ -2,10 +2,7 @@ package com.example.petropapi;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,10 +14,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.petropapi.models.gasbuddy.GasBuddyStationResponse;
-import com.example.petropapi.models.gasbuddy.Station;
-import com.example.petropapi.network.GasBuddyApiService;
-import com.example.petropapi.network.GraphQLRequest;
+import com.example.petropapi.data.StationRepository;
+import com.example.petropapi.data.StationRepositoryCallback;
+import com.example.petropapi.data.StationRepositoryFactory;
+import com.example.petropapi.data.model.StationSummary;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -33,21 +30,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.appbar.MaterialToolbar;
 
-import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -58,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private FusedLocationProviderClient fusedLocationClient;
     private RecyclerView recyclerView;
     private GasStationAdapter gasStationAdapter;
-    private GasBuddyApiService gasBuddyApi;
+    private StationRepository stationRepository;
 
     // NEW: "Search this area" button reference
     private Button btnSearchThisArea;
@@ -121,42 +105,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             getUserLocation();
         }
 
-        // Build OkHttpClient with headers.
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(chain -> {
-                    Request original = chain.request();
-                    Request newRequest = original.newBuilder()
-                            .header("Content-Type", "application/json")
-                            .header("accept", "*/*")
-                            .header("accept-language", "en-US,en;q=0.9")
-                            .header("apollo-require-preflight", "true")
-                            .header("gbcsrf", "1.meTUIoHxkwpNhiis")
-                            .header("origin", "https://www.gasbuddy.com")
-                            .header("referer", "https://www.gasbuddy.com/station/45933")
-                            .header("sec-ch-ua", "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Android WebView\";v=\"132\"")
-                            .header("sec-ch-ua-mobile", "?1")
-                            .header("sec-ch-ua-platform", "\"Android\"")
-                            .header("sec-fetch-dest", "empty")
-                            .header("sec-fetch-mode", "cors")
-                            .header("sec-fetch-site", "same-origin")
-                            .header("user-agent", "Mozilla/5.0 (Linux; Android 11; Pixel 4 XL Build/RQ2A.210305.006) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Mobile Safari/537.36")
-                            .build();
-                    return chain.proceed(newRequest);
-                })
-                .addInterceptor(loggingInterceptor)
-                .build();
-
-        // Build Retrofit.
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://www.gasbuddy.com/graphql/")
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        gasBuddyApi = retrofit.create(GasBuddyApiService.class);
+        stationRepository = StationRepositoryFactory.createDefaultRepository();
     }
 
     @Override
@@ -224,79 +173,32 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     private void fetchNearbyStations(double lat, double lng) {
         Log.d(TAG, "fetchNearbyStations: lat=" + lat + ", lng=" + lng);
-        String queryString = "query GetStations($lat: Float!, $lng: Float!) { " +
-                "stations(lat: $lat, lng: $lng) { " +
-                "results { " +
-                "address { country line1 line2 locality postalCode region __typename } " +
-                "amenities { amenityId imageUrl name __typename } " +
-                "badges { badgeId callToAction campaignId clickTrackingUrl description detailsImageUrl detailsImpressionTrackingUrls imageUrl impressionTrackingUrls internalName targetUrl title __typename } " +
-                "brands { brandId brandingType imageUrl name __typename } " +
-                "currency " +
-                "emergencyStatus { hasGas { nickname reportStatus stamp updateDate __typename } hasPower { nickname reportStatus stamp updateDate __typename } hasDiesel { nickname reportStatus stamp updateDate __typename } __typename } " +
-                "enterprise " +
-                "fuels " +
-                "hasActiveOutage " +
-                "hours { nextIntervals { close open __typename } openingHours status __typename } " +
-                "id " +
-                "latitude " +
-                "longitude " +
-                "name " +
-                "prices { cash { nickname postedTime price formattedPrice __typename } " +
-                "credit { nickname postedTime price formattedPrice __typename } " +
-                "fuelProduct longName __typename } " +
-                "__typename " +
-                "} " +
-                "__typename " +
-                "} " +
-                "}";
-        Map<String, Object> vars = new HashMap<>();
-        vars.put("lat", lat);
-        vars.put("lng", lng);
-        GraphQLRequest request = new GraphQLRequest("GetStations", vars, queryString);
-
-        gasBuddyApi.getStationsData(request).enqueue(new Callback<GasBuddyStationResponse>() {
+        stationRepository.fetchStations(lat, lng, new StationRepositoryCallback<List<StationSummary>>() {
             @Override
-            public void onResponse(Call<GasBuddyStationResponse> call, Response<GasBuddyStationResponse> response) {
-                if (!response.isSuccessful() || response.body() == null) {
-                    Log.e(TAG, "GasBuddy call failed: code = " + response.code());
-                    try {
-                        Log.e(TAG, "errorBody: " + (response.errorBody() != null ? response.errorBody().string() : "none"));
-                    } catch (IOException e) {
-                        Log.e(TAG, "Error reading errorBody", e);
-                    }
-                    Toast.makeText(MainActivity.this, "Error fetching gas station data", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                if (response.body().getData().getStations() == null ||
-                        response.body().getData().getStations().getResults() == null ||
-                        response.body().getData().getStations().getResults().isEmpty()) {
+            public void onSuccess(List<StationSummary> stationList) {
+                if (stationList == null || stationList.isEmpty()) {
                     Log.e(TAG, "No stations found in response");
                     Toast.makeText(MainActivity.this, "No gas stations found", Toast.LENGTH_LONG).show();
                     return;
                 }
-                // Update RecyclerView with station list.
-                List<Station> stationList = response.body().getData().getStations().getResults();
                 gasStationAdapter.updateData(stationList);
 
-                // Update map markers.
                 if (googleMap != null) {
                     googleMap.clear();
-                    for (Station s : stationList) {
+                    for (StationSummary s : stationList) {
                         LatLng latLng = new LatLng(s.getLatitude(), s.getLongitude());
                         googleMap.addMarker(new MarkerOptions().position(latLng).title(s.getName()));
                     }
-                    // Optionally move camera to the first station.
-                    Station firstStation = stationList.get(0);
+                    StationSummary firstStation = stationList.get(0);
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                             new LatLng(firstStation.getLatitude(), firstStation.getLongitude()), 12f));
                 }
             }
 
             @Override
-            public void onFailure(Call<GasBuddyStationResponse> call, Throwable t) {
-                Log.e(TAG, "GasBuddy API Error: " + t.getMessage());
-                t.printStackTrace();
-                Toast.makeText(MainActivity.this, "Failed to fetch gas station data", Toast.LENGTH_LONG).show();
+            public void onError(Throwable error) {
+                Log.e(TAG, "Station API Error: " + error.getMessage());
+                Toast.makeText(MainActivity.this, "Failed to fetch station data", Toast.LENGTH_LONG).show();
             }
         });
     }
