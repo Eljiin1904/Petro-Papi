@@ -1,12 +1,12 @@
 # Petro Papi ⛽
 
-**Real-time gas prices from tu amigo "Petro Papi"**
+**Real-time fuel and EV insights from tu amigo "Petro Papi"**
 
-A mobile application that helps users find the best gas prices in their area in real-time, helping you save money at the pump.
+A mobile application that helps users find the best gas prices and EV charging options in their area in real-time, helping you save money on the road.
 
 ## 📱 About
 
-Petro Papi is an Android application designed to provide users with up-to-date gasoline prices from nearby gas stations. Whether you're planning a road trip or just filling up for the week, Petro Papi helps you find the cheapest fuel options near you.
+Petro Papi is a mobile application for Android and iOS designed to provide users with up-to-date gasoline prices and EV charging data from nearby stations. Whether you're planning a road trip or just filling up for the week, Petro Papi helps you find the cheapest fuel options and plan efficient routes.
 
 ## ✨ Features
 
@@ -14,7 +14,11 @@ Petro Papi is an Android application designed to provide users with up-to-date g
 - 💰 **Real-Time Price Updates** - Get the latest fuel prices from stations in your area
 - 🗺️ **Interactive Map View** - Visualize gas stations and their prices on a map
 - 📊 **Price Comparison** - Compare prices across different stations to find the best deal
+- ⚡ **EV Stations** - Discover nearby EV charging stations with availability details
+- 🧭 **Trip Planning** - Build routes with optimal fuel stops
+- 🔋 **EV Trip Planning** - Plan charging-aware routes tailored for electric vehicles
 - ⭐ **Favorites** - Save your frequently visited stations for quick access
+- 📱 **iOS Port** - Native iOS experience alongside Android
 - 📱 **User-Friendly Interface** - Clean and intuitive design for easy navigation
 
 ## 🚀 Getting Started
@@ -25,6 +29,7 @@ Petro Papi is an Android application designed to provide users with up-to-date g
 - Android SDK (minimum API level 21)
 - Git
 - An Android device or emulator running Android 5.0 (Lollipop) or higher
+- Xcode (for iOS builds)
 
 ### Installation
 
@@ -101,7 +106,7 @@ Project Link: [https://github.com/Eljiin1904/Petro-Papi](https://github.com/Elji
 - [ ] Add price history and trend charts
 - [ ] Enable push notifications for price drops
 - [ ] Support for multiple languages
-- [ ] iOS version development
+- [ ] EV station reviews and ratings
 
 ---
 
