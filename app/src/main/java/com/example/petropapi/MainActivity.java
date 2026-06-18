@@ -14,6 +14,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.petropapi.data.StationRepository;
+import com.example.petropapi.data.StationRepositoryCallback;
+import com.example.petropapi.data.StationRepositoryFactory;
+import com.example.petropapi.data.model.StationSummary;
 import com.example.petropapi.models.gasbuddy.Station;
 import com.example.petropapi.data.StationRepository;
 import com.google.android.gms.common.ConnectionResult;
@@ -103,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             getUserLocation();
         }
 
+        stationRepository = StationRepositoryFactory.createDefaultRepository();
         stationRepository = new StationRepository(this);
     }
 
@@ -171,6 +176,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     private void fetchNearbyStations(double lat, double lng) {
         Log.d(TAG, "fetchNearbyStations: lat=" + lat + ", lng=" + lng);
+        stationRepository.fetchStations(lat, lng, new StationRepositoryCallback<List<StationSummary>>() {
+            @Override
+            public void onSuccess(List<StationSummary> stationList) {
+                if (stationList == null || stationList.isEmpty()) {
+                    Log.e(TAG, "No stations found in response");
+                    Toast.makeText(MainActivity.this, "No gas stations found", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                gasStationAdapter.updateData(stationList);
+
+                if (googleMap != null) {
+                    googleMap.clear();
+                    for (StationSummary s : stationList) {
+                        LatLng latLng = new LatLng(s.getLatitude(), s.getLongitude());
+                        googleMap.addMarker(new MarkerOptions().position(latLng).title(s.getName()));
+                    }
+                    StationSummary firstStation = stationList.get(0);
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                            new LatLng(firstStation.getLatitude(), firstStation.getLongitude()), 12f));
         stationRepository.fetchNearbyStations(lat, lng, new StationRepository.StationCallback() {
             @Override
             public void onSuccess(List<Station> stationList, boolean fromCache) {
@@ -181,6 +205,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
 
             @Override
+            public void onError(Throwable error) {
+                Log.e(TAG, "Station API Error: " + error.getMessage());
+                Toast.makeText(MainActivity.this, "Failed to fetch station data", Toast.LENGTH_LONG).show();
             public void onError(String message) {
                 Log.e(TAG, "Station repository error: " + message);
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();

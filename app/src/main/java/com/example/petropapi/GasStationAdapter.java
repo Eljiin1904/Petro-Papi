@@ -10,8 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.petropapi.models.gasbuddy.PriceReport;
-import com.example.petropapi.models.gasbuddy.Station;
+import com.example.petropapi.data.model.StationSummary;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -19,16 +18,16 @@ import java.util.List;
 
 public class GasStationAdapter extends RecyclerView.Adapter<GasStationAdapter.GasStationViewHolder> {
 
-    private final List<Station> stationList;
+    private final List<StationSummary> stationList;
 
-    public GasStationAdapter(List<Station> initialData) {
+    public GasStationAdapter(List<StationSummary> initialData) {
         if (initialData == null) {
             initialData = new ArrayList<>();
         }
         this.stationList = new ArrayList<>(initialData);
     }
 
-    public void updateData(List<Station> newStations) {
+    public void updateData(List<StationSummary> newStations) {
         stationList.clear();
         if (newStations != null) {
             stationList.addAll(newStations);
@@ -46,7 +45,7 @@ public class GasStationAdapter extends RecyclerView.Adapter<GasStationAdapter.Ga
 
     @Override
     public void onBindViewHolder(@NonNull GasStationViewHolder holder, int position) {
-        Station station = stationList.get(position);
+        StationSummary station = stationList.get(position);
         holder.bind(station);
     }
 
@@ -71,56 +70,27 @@ public class GasStationAdapter extends RecyclerView.Adapter<GasStationAdapter.Ga
             ivStationImage = itemView.findViewById(R.id.ivStationImage); // <-- ADDED
         }
 
-        public void bind(Station station) {
+        public void bind(StationSummary station) {
             // ---- Station Name ----
             stationName.setText(
                     station.getName() != null ? station.getName() : "Unknown Station"
             );
 
             // ---- Station Address ----
-            if (station.getAddress() != null) {
-                stationAddress.setText(station.getAddress().getLine1());
-            } else {
-                stationAddress.setText("No address available");
-            }
+            String addressLine = station.getAddressLine1();
+            stationAddress.setText(addressLine != null ? addressLine : "No address available");
 
             // ---- Station Prices ----
-            if (station.getPrices() != null && !station.getPrices().isEmpty()) {
-                StringBuilder pricesStr = new StringBuilder();
-                for (PriceReport pr : station.getPrices()) {
-                    if (pr.getCredit() != null && !TextUtils.isEmpty(pr.getCredit().getFormattedPrice())) {
-                        pricesStr.append(pr.getLongName())
-                                .append(": ")
-                                .append(pr.getCredit().getFormattedPrice())
-                                .append(", ");
-                    }
-                }
-                if (pricesStr.length() > 2) {
-                    pricesStr.setLength(pricesStr.length() - 2); // remove trailing ", "
-                }
-                stationPrices.setText(pricesStr.toString());
-            } else {
-                stationPrices.setText("No prices available");
-            }
+            String priceSummary = station.getPriceSummary();
+            stationPrices.setText(!TextUtils.isEmpty(priceSummary) ? priceSummary : "No prices available");
 
             // ---- Station Hours ----
-            if (station.getHours() != null) {
-                String openingHours = station.getHours().getOpeningHours();
-                String status = station.getHours().getStatus();
-                String hoursText = "Hours: " + (openingHours != null ? openingHours : "N/A")
-                        + " (" + (status != null ? status : "N/A") + ")";
-                stationHours.setText(hoursText);
-            } else {
-                stationHours.setText("No hours available");
-            }
+            String hoursSummary = station.getHoursSummary();
+            stationHours.setText(!TextUtils.isEmpty(hoursSummary) ? hoursSummary : "No hours available");
 
             // ---- Station Image ----
             // For example, if the brand list has the station's main image:
-            String imageUrl = null;
-            if (station.getBrands() != null && !station.getBrands().isEmpty()) {
-                // This assumes each Brand has an `imageUrl` field
-                imageUrl = station.getBrands().get(0).getImageUrl();
-            }
+            String imageUrl = station.getImageUrl();
 
             if (imageUrl != null && !imageUrl.isEmpty()) {
                 Picasso.get()

@@ -20,13 +20,29 @@ android {
                 localProperties.load(stream)
             }
         }
-        def mapsApiKey = localProperties.getProperty("MAPS_API_KEY")
-        if (!mapsApiKey) {
-            mapsApiKey = project.findProperty("MAPS_API_KEY") ?: System.getenv("MAPS_API_KEY")
+        def resolveApiKey = { String keyName ->
+            def value = localProperties.getProperty(keyName)
+            if (!value) {
+                value = project.findProperty(keyName) ?: System.getenv(keyName)
+            }
+            if (!value) {
+                value = "MISSING_${keyName}"
+            }
+            return value
         }
-        if (!mapsApiKey) {
-            mapsApiKey = "MISSING_MAPS_API_KEY"
-        }
+
+        def mapsApiKey = resolveApiKey("MAPS_API_KEY")
+        def nrelApiKey = resolveApiKey("NREL_API_KEY")
+        def openChargeMapApiKey = resolveApiKey("OPEN_CHARGE_MAP_API_KEY")
+        def tomTomApiKey = resolveApiKey("TOMTOM_API_KEY")
+        def smartcarClientId = resolveApiKey("SMARTCAR_CLIENT_ID")
+        def smartcarClientSecret = resolveApiKey("SMARTCAR_CLIENT_SECRET")
+        def hereApiKey = resolveApiKey("HERE_API_KEY")
+        def chargeHubApiKey = resolveApiKey("CHARGEHUB_API_KEY")
+        def mapboxApiKey = resolveApiKey("MAPBOX_API_KEY")
+        def eiaApiKey = resolveApiKey("EIA_API_KEY")
+        def collectApiKey = resolveApiKey("COLLECT_API_KEY")
+        def apifyApiKey = resolveApiKey("APIFY_API_KEY")
 
         applicationId "com.example.petropapi"
         minSdkVersion 21
@@ -34,6 +50,17 @@ android {
         versionCode 1
         versionName "1.0"
         manifestPlaceholders = [MAPS_API_KEY: mapsApiKey]
+        buildConfigField "String", "NREL_API_KEY", "\"${nrelApiKey}\""
+        buildConfigField "String", "OPEN_CHARGE_MAP_API_KEY", "\"${openChargeMapApiKey}\""
+        buildConfigField "String", "TOMTOM_API_KEY", "\"${tomTomApiKey}\""
+        buildConfigField "String", "SMARTCAR_CLIENT_ID", "\"${smartcarClientId}\""
+        buildConfigField "String", "SMARTCAR_CLIENT_SECRET", "\"${smartcarClientSecret}\""
+        buildConfigField "String", "HERE_API_KEY", "\"${hereApiKey}\""
+        buildConfigField "String", "CHARGEHUB_API_KEY", "\"${chargeHubApiKey}\""
+        buildConfigField "String", "MAPBOX_API_KEY", "\"${mapboxApiKey}\""
+        buildConfigField "String", "EIA_API_KEY", "\"${eiaApiKey}\""
+        buildConfigField "String", "COLLECT_API_KEY", "\"${collectApiKey}\""
+        buildConfigField "String", "APIFY_API_KEY", "\"${apifyApiKey}\""
 
         // Use the AndroidX test runner instead of the old android.support runner
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -41,8 +68,7 @@ android {
 
     buildFeatures {
         viewBinding true
-        // if you need buildConfig
-        // buildConfig true
+        buildConfig true
     }
 
     // ...
